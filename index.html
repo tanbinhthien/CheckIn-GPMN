@@ -15,38 +15,41 @@
   <h2>✅ Check-in Nhân viên</h2>
   <p id="status">📍 Đang kiểm tra vị trí GPS...</p>
 
-  <form id="form-checkin">
-    <input type="text" id="manv" placeholder="Mã nhân viên" required />
-    <input type="text" id="hoten" placeholder="Họ tên" required />
-    <input type="text" id="phong" placeholder="Phòng ban" required />
+  <form id="form-checkin"
+        action="https://script.google.com/macros/s/AKfycbwFqpxDVGCTAtR2bdiKbnfulzMn5UsvHD9AMnH8LEITIqlcBKhd9dKqVM799jM1h_dd/exec"
+        method="POST"
+        target="hiddenFrame"
+        onsubmit="handleSubmit()">
+    <input type="text" name="manv" id="manv" placeholder="Mã nhân viên" required />
+    <input type="text" name="hoten" id="hoten" placeholder="Họ tên" required />
+    <input type="text" name="phong" id="phong" placeholder="Phòng ban" required />
     <button type="submit">Gửi Check-in</button>
   </form>
+
+  <iframe name="hiddenFrame" style="display:none;"></iframe>
 
   <p id="result"></p>
 
   <script>
-    const latTarget = 10.657650849130794; // 🔁 Thay bằng tọa độ vị trí thực tế
-    const lngTarget =  106.61933287072665;  // 🔁 Thay bằng tọa độ vị trí thực tế
+    const latTarget = 10.657650849130794;
+    const lngTarget = 106.61933287072665;
     const allowedDistance = 100; // mét
 
     const statusEl = document.getElementById("status");
     const formEl = document.getElementById("form-checkin");
     const resultEl = document.getElementById("result");
 
-    // Tính khoảng cách giữa hai tọa độ GPS
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
       const φ1 = lat1 * Math.PI / 180;
       const φ2 = lat2 * Math.PI / 180;
       const Δφ = (lat2 - lat1) * Math.PI / 180;
       const Δλ = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(Δφ/2) ** 2 +
-                Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ/2) ** 2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c; // mét
+      const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      return R * c;
     }
 
-    // Kiểm tra đã check-in chưa
     if (localStorage.getItem("hasCheckedIn") === "true") {
       statusEl.textContent = "✅ Bạn đã check-in trên thiết bị này.";
     } else if (navigator.geolocation) {
@@ -65,35 +68,13 @@
       statusEl.textContent = "⚠️ Trình duyệt không hỗ trợ định vị GPS.";
     }
 
-    // Gửi dữ liệu
-    formEl.addEventListener("submit", e => {
-      e.preventDefault();
-      const data = {
-        manv: document.getElementById("manv").value.trim(),
-        hoten: document.getElementById("hoten").value.trim(),
-        phong: document.getElementById("phong").value.trim(),
-        time: new Date().toLocaleString("vi-VN")
-      };
-
-      fetch("https://script.google.com/macros/s/AKfycbwFqpxDVGCTAtR2bdiKbnfulzMn5UsvHD9AMnH8LEITIqlcBKhd9dKqVM799jM1h_dd/exec", {
-        method: "POST",
-        mode: "no-cors", 
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(data)
-      })
-      .then(res => {
-        if (res.ok) {
-          localStorage.setItem("hasCheckedIn", "true");
-          formEl.style.display = "none";
-          resultEl.innerHTML = `✅ Cảm ơn ${data.hoten}, bạn đã check-in lúc ${data.time}`;
-        } else {
-          throw new Error("Không gửi được dữ liệu.");
-        }
-      })
-      .catch(err => {
-        resultEl.textContent = `❌ Lỗi gửi dữ liệu: ${err.message}`;
-      });
-    });
+    function handleSubmit() {
+      localStorage.setItem("hasCheckedIn", "true");
+      const name = document.getElementById("hoten").value;
+      const time = new Date().toLocaleString("vi-VN");
+      formEl.style.display = "none";
+      resultEl.innerHTML = `✅ Cảm ơn ${name}, bạn đã check-in lúc ${time}`;
+    }
   </script>
 </body>
 </html>
