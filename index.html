@@ -82,8 +82,8 @@
     const resultEl = document.getElementById("result");
     const resetBtn = document.getElementById("resetBtn");
 
-    // ✅ Lấy số lần reset từ localStorage hoặc mặc định là 0
-    let resetCount = parseInt(localStorage.getItem("resetCount") || "0");
+    // ✅ Lấy số lần reset, mặc định 0 nếu chưa từng reset
+    let resetCount = Number(localStorage.getItem("resetCount")) || 0;
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
@@ -118,7 +118,7 @@
     function handleSubmit() {
       localStorage.setItem("hasCheckedIn", "true");
 
-      // ✅ Gửi số lần reset vào ô ẩn
+      // ✅ Gửi đúng số lần reset hiện tại
       document.getElementById("solanreset").value = resetCount.toString();
 
       const name = document.getElementById("hoten").value;
