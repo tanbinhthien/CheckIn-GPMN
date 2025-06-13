@@ -22,7 +22,22 @@
         onsubmit="handleSubmit()">
     <input type="text" name="manv" id="manv" placeholder="Mã nhân viên" required />
     <input type="text" name="hoten" id="hoten" placeholder="Họ tên" required />
-    <input type="text" name="phong" id="phong" placeholder="Phòng ban" required />
+    <select name="phong" id="phong" required>
+		<option value="">-- Chọn phòng ban --</option>
+		<option value="Phòng Phát Triển">Phòng Phát Triển</option>
+		<option value="Phòng Kiểm Thử">Phòng Kiểm Thử</option>
+		<option value="Phòng Giải Pháp">Phòng Giải Pháp</option>
+		<option value="Phòng QTDA">Phòng QTDA</option>
+		<option value="Phòng KHTH">Phòng KHTH</option>
+		<option value="Phòng Sản Phẩm">Phòng Sản Phẩm</option>
+		<option value="Phòng TVGP KHDN">Phòng TVGP KHDN</option>
+		<option value="Phòng KHDN">Phòng KHDN</option>
+		<option value="Phòng TVGP KHHCM">KPhòng TVGP KHHCM</option>
+		<option value="Phòng KH HCM">Phòng KH HCM</option>
+		<option value="Phòng Hỗ Trợ">Phòng Hỗ Trợ</option>
+		<option value="Phòng KH YT-GD">Phòng KH YT-GD</option>
+		<option value="Phòng KH SXTD ">Phòng KH SXTD</option>
+	</select>
     <button type="submit">Gửi Check-in</button>
   </form>
 
