@@ -79,8 +79,7 @@
     <form id="form-checkin"
           action="https://script.google.com/macros/s/AKfycbxl_OZWXg1RsPYjMXRv0I3-rcAOxtuJIFXOUI8wOOeL_xAD0_OjYxIU2JmqJYXCeHXa/exec"
           method="POST"
-          target="hiddenFrame"
-          onsubmit="handleSubmit()">
+          target="hiddenFrame">
 
       <label for="manv">Mã nhân viên</label>
       <input type="text" name="manv" id="manv" placeholder="VD: NV123" required />
@@ -184,6 +183,12 @@
     localStorage.removeItem("hasCheckedIn");
     location.reload();
   }
+  
+  document.getElementById("form-checkin").addEventListener("submit", function(e) {
+  if (!handleSubmit()) {
+    e.preventDefault(); // Ngăn gửi form
+  }
+  });
 </script>
 
 </body>
