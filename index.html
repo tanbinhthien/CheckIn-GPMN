@@ -77,7 +77,7 @@
     <p id="status">📍 Đang kiểm tra vị trí GPS...</p>
 
     <form id="form-checkin"
-          action="https://script.google.com/macros/s/AKfycbzoHP_q0UVnlkOmEyESfZZN93xjEmjdH6mbti87h4GOs8v4Q8jnSk82ooNwt-wxDGU/exec"
+          action="https://script.google.com/macros/s/AKfycbxl_OZWXg1RsPYjMXRv0I3-rcAOxtuJIFXOUI8wOOeL_xAD0_OjYxIU2JmqJYXCeHXa/exec"
           method="POST"
           target="hiddenFrame"
           onsubmit="handleSubmit()">
@@ -117,64 +117,74 @@
     <button id="resetBtn" onclick="resetCheckin()" style="display: none;">🔄 Check-in lại</button>
   </div>
 
-  <script>
-    const latTarget = 10.7774507;
-    const lngTarget = 106.6801610;
-    const allowedDistance = 80;
+<script>
+  const latTarget = 10.7774507;
+  const lngTarget = 106.6801610;
+  const allowedDistance = 80;
 
-    const statusEl = document.getElementById("status");
-    const formEl = document.getElementById("form-checkin");
-    const resultEl = document.getElementById("result");
-    const resetBtn = document.getElementById("resetBtn");
+  const statusEl = document.getElementById("status");
+  const formEl = document.getElementById("form-checkin");
+  const resultEl = document.getElementById("result");
+  const resetBtn = document.getElementById("resetBtn");
 
-    let resetCount = Number(localStorage.getItem("resetCount")) || 0;
+  let resetCount = Number(localStorage.getItem("resetCount")) || 0;
 
-    function getDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371e3;
-      const φ1 = lat1 * Math.PI / 180;
-      const φ2 = lat2 * Math.PI / 180;
-      const Δφ = (lat2 - lat1) * Math.PI / 180;
-      const Δλ = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
+  function getDistance(lat1, lon1, lat2, lon2) {
+    const R = 6371e3;
+    const φ1 = lat1 * Math.PI / 180;
+    const φ2 = lat2 * Math.PI / 180;
+    const Δφ = (lat2 - lat1) * Math.PI / 180;
+    const Δλ = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+  }
+
+  if (localStorage.getItem("hasCheckedIn") === "true") {
+    statusEl.textContent = "✅ Bạn đã check-in trên thiết bị này.";
+    resetBtn.style.display = "block";
+  } else if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(pos => {
+      const d = getDistance(pos.coords.latitude, pos.coords.longitude, latTarget, lngTarget);
+      if (d <= allowedDistance) {
+        statusEl.textContent = `📍 Trong phạm vi ${d.toFixed(1)} m – mời bạn nhập thông tin.`;
+        formEl.style.display = "block";
+      } else {
+        statusEl.textContent = `❌ Bạn cách ${d.toFixed(1)} m – vui lòng đến gần địa điểm check-in (≤ ${allowedDistance}m).`;
+      }
+    }, err => {
+      statusEl.textContent = `⚠️ Không lấy được vị trí: ${err.message}`;
+    }, { enableHighAccuracy: true, timeout: 10000 });
+  } else {
+    statusEl.textContent = "⚠️ Trình duyệt không hỗ trợ định vị GPS.";
+  }
+
+  function handleSubmit() {
+    if (resetCount > 3) {
+      alert("❌ Bạn đã vượt quá số lần check-in lại (tối đa 3 lần). Vui lòng liên hệ ban tổ chức.");
+      return false; // Chặn submit
     }
 
-    if (localStorage.getItem("hasCheckedIn") === "true") {
-      statusEl.textContent = "✅ Bạn đã check-in trên thiết bị này.";
-      resetBtn.style.display = "block";
-    } else if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(pos => {
-        const d = getDistance(pos.coords.latitude, pos.coords.longitude, latTarget, lngTarget);
-        if (d <= allowedDistance) {
-          statusEl.textContent = `📍 Trong phạm vi ${d.toFixed(1)} m – mời bạn nhập thông tin.`;
-          formEl.style.display = "block";
-        } else {
-          statusEl.textContent = `❌ Bạn cách ${d.toFixed(1)} m – vui lòng đến gần địa điểm check-in (≤ ${allowedDistance}m).`;
-        }
-      }, err => {
-        statusEl.textContent = `⚠️ Không lấy được vị trí: ${err.message}`;
-      }, { enableHighAccuracy: true, timeout: 10000 });
-    } else {
-      statusEl.textContent = "⚠️ Trình duyệt không hỗ trợ định vị GPS.";
-    }
+    localStorage.setItem("hasCheckedIn", "true");
+    document.getElementById("solanreset").value = resetCount.toString();
 
-    function handleSubmit() {
-      localStorage.setItem("hasCheckedIn", "true");
-      document.getElementById("solanreset").value = resetCount.toString();
-      const name = document.getElementById("hoten").value;
-      const time = new Date().toLocaleString("vi-VN");
-      formEl.style.display = "none";
-      resultEl.innerHTML = `✅ Cảm ơn ${name}, bạn đã check-in lúc ${time}`;
-      resetBtn.style.display = "block";
-    }
+    const name = document.getElementById("hoten").value;
+    const time = new Date().toLocaleString("vi-VN");
 
-    function resetCheckin() {
-      resetCount++;
-      localStorage.setItem("resetCount", resetCount.toString());
-      localStorage.removeItem("hasCheckedIn");
-      location.reload();
-    }
-  </script>
+    formEl.style.display = "none";
+    resultEl.innerHTML = `✅ Cảm ơn ${name}, bạn đã check-in lúc ${time}`;
+    resetBtn.style.display = "block";
+
+    return true; // Cho phép submit
+  }
+
+  function resetCheckin() {
+    resetCount++;
+    localStorage.setItem("resetCount", resetCount.toString());
+    localStorage.removeItem("hasCheckedIn");
+    location.reload();
+  }
+</script>
+
 </body>
 </html>
