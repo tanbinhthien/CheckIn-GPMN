@@ -5,10 +5,31 @@
   <title>Check-in Nhân viên</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
-    body { font-family: Arial, sans-serif; max-width: 480px; margin: auto; padding: 20px; }
-    input, button { width: 100%; padding: 12px; margin: 8px 0; font-size: 16px; }
-    #form-checkin { display: none; }
-    #result { margin-top: 20px; font-weight: bold; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 480px;
+      margin: auto;
+      padding: 20px;
+    }
+    input, select, button {
+      width: 100%;
+      padding: 12px;
+      margin: 8px 0;
+      font-size: 16px;
+    }
+    #form-checkin {
+      display: none;
+    }
+    #result {
+      margin-top: 20px;
+      font-weight: bold;
+    }
+    #resetBtn {
+      background-color: #f0f0f0;
+      color: #333;
+      border: 1px solid #ccc;
+      display: none;
+    }
   </style>
 </head>
 <body>
@@ -28,8 +49,8 @@
 		<option value="Phòng Kiểm Thử">Phòng Kiểm Thử</option>
 		<option value="Phòng Giải Pháp">Phòng Giải Pháp</option>
 		<option value="Phòng QTDA">Phòng QTDA</option>
+	    	<option value="Phòng Sản Phẩm">Phòng Sản Phẩm</option>
 		<option value="Phòng KHTH">Phòng KHTH</option>
-		<option value="Phòng Sản Phẩm">Phòng Sản Phẩm</option>
 		<option value="Phòng TVGP KHDN">Phòng TVGP KHDN</option>
 		<option value="Phòng KHDN">Phòng KHDN</option>
 		<option value="Phòng TVGP KHHCM">KPhòng TVGP KHHCM</option>
@@ -44,6 +65,7 @@
   <iframe name="hiddenFrame" style="display:none;"></iframe>
 
   <p id="result"></p>
+  <button id="resetBtn" onclick="resetCheckin()">🔄 Check-in lại</button>
 
   <script>
     const latTarget = 10.7774507;
@@ -53,6 +75,7 @@
     const statusEl = document.getElementById("status");
     const formEl = document.getElementById("form-checkin");
     const resultEl = document.getElementById("result");
+    const resetBtn = document.getElementById("resetBtn");
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
@@ -67,6 +90,7 @@
 
     if (localStorage.getItem("hasCheckedIn") === "true") {
       statusEl.textContent = "✅ Bạn đã check-in trên thiết bị này.";
+      resetBtn.style.display = "block";
     } else if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(pos => {
         const d = getDistance(pos.coords.latitude, pos.coords.longitude, latTarget, lngTarget);
@@ -89,6 +113,12 @@
       const time = new Date().toLocaleString("vi-VN");
       formEl.style.display = "none";
       resultEl.innerHTML = `✅ Cảm ơn ${name}, bạn đã check-in lúc ${time}`;
+      resetBtn.style.display = "block";
+    }
+
+    function resetCheckin() {
+      localStorage.removeItem("hasCheckedIn");
+      location.reload(); // tải lại trang
     }
   </script>
 </body>
