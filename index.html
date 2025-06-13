@@ -37,28 +37,33 @@
   <p id="status">📍 Đang kiểm tra vị trí GPS...</p>
 
   <form id="form-checkin"
-        action="https://script.google.com/macros/s/AKfycbz3RZOlpDMByJX8B4hYQjH7dg5Ohr0wAzLdinlHmcb8Qr-GTOfEqCvRYMM_ApX6njCW/exec"
+        action="https://script.google.com/macros/s/AKfycbwgCQClkLyThgrqUozk43jD9pVBavphOE4uV-64L_LBeJ912ZzldR5c7bJL3AoQd9d6/exec"
         method="POST"
         target="hiddenFrame"
         onsubmit="handleSubmit()">
     <input type="text" name="manv" id="manv" placeholder="Mã nhân viên" required />
     <input type="text" name="hoten" id="hoten" placeholder="Họ tên" required />
+    
     <select name="phong" id="phong" required>
-		<option value="">-- Chọn phòng ban --</option>
-		<option value="Phòng Phát Triển">Phòng Phát Triển</option>
-		<option value="Phòng Kiểm Thử">Phòng Kiểm Thử</option>
-		<option value="Phòng Giải Pháp">Phòng Giải Pháp</option>
-		<option value="Phòng QTDA">Phòng QTDA</option>
-	    	<option value="Phòng Sản Phẩm">Phòng Sản Phẩm</option>
-		<option value="Phòng KHTH">Phòng KHTH</option>
-		<option value="Phòng TVGP KHDN">Phòng TVGP KHDN</option>
-		<option value="Phòng KHDN">Phòng KHDN</option>
-		<option value="Phòng TVGP KHHCM">KPhòng TVGP KHHCM</option>
-		<option value="Phòng KH HCM">Phòng KH HCM</option>
-		<option value="Phòng Hỗ Trợ">Phòng Hỗ Trợ</option>
-		<option value="Phòng KH YT-GD">Phòng KH YT-GD</option>
-		<option value="Phòng KH SXTD ">Phòng KH SXTD</option>
-	</select>
+      <option value="">-- Chọn phòng ban --</option>
+      <option value="Phòng Phát Triển">Phòng Phát Triển</option>
+      <option value="Phòng Kiểm Thử">Phòng Kiểm Thử</option>
+      <option value="Phòng Giải Pháp">Phòng Giải Pháp</option>
+      <option value="Phòng QTDA">Phòng QTDA</option>
+      <option value="Phòng KHTH">Phòng KHTH</option>
+      <option value="Phòng Sản Phẩm">Phòng Sản Phẩm</option>
+      <option value="Phòng TVGP KHDN">Phòng TVGP KHDN</option>
+      <option value="Phòng KHDN">Phòng KHDN</option>
+      <option value="Phòng TVGP KHHCM">Phòng TVGP KHHCM</option>
+      <option value="Phòng KH HCM">Phòng KH HCM</option>
+      <option value="Phòng Hỗ Trợ">Phòng Hỗ Trợ</option>
+      <option value="Phòng KH YT-GD">Phòng KH YT-GD</option>
+      <option value="Phòng KH SXTD ">Phòng KH SXTD</option>
+    </select>
+
+    <!-- ✅ Ô ẩn để gửi số lần check-in lại -->
+    <input type="hidden" name="solanreset" id="solanreset" value="0" />
+
     <button type="submit">Gửi Check-in</button>
   </form>
 
@@ -70,12 +75,15 @@
   <script>
     const latTarget = 10.7774507;
     const lngTarget = 106.6801610;
-    const allowedDistance = 80; // mét
+    const allowedDistance = 80;
 
     const statusEl = document.getElementById("status");
     const formEl = document.getElementById("form-checkin");
     const resultEl = document.getElementById("result");
     const resetBtn = document.getElementById("resetBtn");
+
+    // ✅ Lấy số lần reset từ localStorage hoặc mặc định là 0
+    let resetCount = parseInt(localStorage.getItem("resetCount") || "0");
 
     function getDistance(lat1, lon1, lat2, lon2) {
       const R = 6371e3;
@@ -83,8 +91,8 @@
       const φ2 = lat2 * Math.PI / 180;
       const Δφ = (lat2 - lat1) * Math.PI / 180;
       const Δλ = (lon2 - lon1) * Math.PI / 180;
-      const a = Math.sin(Δφ/2)**2 + Math.cos(φ1)*Math.cos(φ2)*Math.sin(Δλ/2)**2;
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const a = Math.sin(Δφ / 2) ** 2 + Math.cos(φ1) * Math.cos(φ2) * Math.sin(Δλ / 2) ** 2;
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return R * c;
     }
 
@@ -109,6 +117,10 @@
 
     function handleSubmit() {
       localStorage.setItem("hasCheckedIn", "true");
+
+      // ✅ Gửi số lần reset vào ô ẩn
+      document.getElementById("solanreset").value = resetCount.toString();
+
       const name = document.getElementById("hoten").value;
       const time = new Date().toLocaleString("vi-VN");
       formEl.style.display = "none";
@@ -117,8 +129,10 @@
     }
 
     function resetCheckin() {
+      resetCount++;
+      localStorage.setItem("resetCount", resetCount.toString());
       localStorage.removeItem("hasCheckedIn");
-      location.reload(); // tải lại trang
+      location.reload();
     }
   </script>
 </body>
