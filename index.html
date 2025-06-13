@@ -2,75 +2,120 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8" />
-  <title>Check-in Nhân viên</title>
+  <title>CHECK-IN SỰ KIỆN</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <style>
+    * {
+      box-sizing: border-box;
+    }
     body {
-      font-family: Arial, sans-serif;
+      font-family: 'Segoe UI', sans-serif;
+      background: #f2f6fa;
+      padding: 20px;
+      margin: 0;
+    }
+    .container {
       max-width: 480px;
       margin: auto;
-      padding: 20px;
+      background: white;
+      padding: 24px;
+      border-radius: 12px;
+      box-shadow: 0 0 12px rgba(0, 0, 0, 0.05);
+    }
+    h2 {
+      text-align: center;
+      color: #0077cc;
+      margin-bottom: 24px;
+      text-transform: uppercase;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+      color: #333;
     }
     input, select, button {
       width: 100%;
       padding: 12px;
-      margin: 8px 0;
+      margin-bottom: 16px;
       font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
     }
-    #form-checkin {
-      display: none;
+    button {
+      background-color: #0077cc;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    #result {
-      margin-top: 20px;
-      font-weight: bold;
+    button:hover {
+      background-color: #005fa3;
     }
     #resetBtn {
-      background-color: #f0f0f0;
+      background: #eee;
       color: #333;
-      border: 1px solid #ccc;
-      display: none;
+      margin-top: 8px;
+      border: 1px solid #bbb;
+    }
+    #status {
+      text-align: center;
+      margin-bottom: 16px;
+      font-weight: bold;
+    }
+    #result {
+      text-align: center;
+      margin-top: 16px;
+      font-weight: bold;
+      color: green;
     }
   </style>
 </head>
 <body>
-  <h2>✅ Check-in Nhân viên</h2>
-  <p id="status">📍 Đang kiểm tra vị trí GPS...</p>
+  <div class="container">
+    <h2>CHECK-IN SỰ KIỆN</h2>
+    <p id="status">📍 Đang kiểm tra vị trí GPS...</p>
 
-  <form id="form-checkin"
-        action="https://script.google.com/macros/s/AKfycbwgCQClkLyThgrqUozk43jD9pVBavphOE4uV-64L_LBeJ912ZzldR5c7bJL3AoQd9d6/exec"
-        method="POST"
-        target="hiddenFrame"
-        onsubmit="handleSubmit()">
-    <input type="text" name="manv" id="manv" placeholder="Mã nhân viên" required />
-    <input type="text" name="hoten" id="hoten" placeholder="Họ tên" required />
-    
-    <select name="phong" id="phong" required>
-      <option value="">-- Chọn phòng ban --</option>
-      <option value="Phòng Phát Triển">Phòng Phát Triển</option>
-      <option value="Phòng Kiểm Thử">Phòng Kiểm Thử</option>
-      <option value="Phòng Giải Pháp">Phòng Giải Pháp</option>
-      <option value="Phòng QTDA">Phòng QTDA</option>
-      <option value="Phòng KHTH">Phòng KHTH</option>
-      <option value="Phòng Sản Phẩm">Phòng Sản Phẩm</option>
-      <option value="Phòng TVGP KHDN">Phòng TVGP KHDN</option>
-      <option value="Phòng KHDN">Phòng KHDN</option>
-      <option value="Phòng TVGP KHHCM">Phòng TVGP KHHCM</option>
-      <option value="Phòng KH HCM">Phòng KH HCM</option>
-      <option value="Phòng Hỗ Trợ">Phòng Hỗ Trợ</option>
-      <option value="Phòng KH YT-GD">Phòng KH YT-GD</option>
-      <option value="Phòng KH SXTD ">Phòng KH SXTD</option>
-    </select>
+    <form id="form-checkin"
+          action="https://script.google.com/macros/s/AKfycbwgCQClkLyThgrqUozk43jD9pVBavphOE4uV-64L_LBeJ912ZzldR5c7bJL3AoQd9d6/exec"
+          method="POST"
+          target="hiddenFrame"
+          onsubmit="handleSubmit()">
 
-    <!-- ✅ Ô ẩn để gửi số lần check-in lại -->
-    <input type="hidden" name="solanreset" id="solanreset" value="0" />
+      <label for="manv">Mã nhân viên</label>
+      <input type="text" name="manv" id="manv" placeholder="VD: NV123" required />
 
-    <button type="submit">Gửi Check-in</button>
-  </form>
+      <label for="hoten">Họ và tên</label>
+      <input type="text" name="hoten" id="hoten" placeholder="Nguyễn Văn A" required />
 
-  <iframe name="hiddenFrame" style="display:none;"></iframe>
+      <label for="phong">Phòng ban</label>
+      <select name="phong" id="phong" required>
+        <option value="">-- Chọn phòng ban --</option>
+        <option value="Phòng Phát Triển">Phòng Phát Triển</option>
+        <option value="Phòng Kiểm Thử">Phòng Kiểm Thử</option>
+        <option value="Phòng Giải Pháp">Phòng Giải Pháp</option>
+        <option value="Phòng QTDA">Phòng QTDA</option>
+        <option value="Phòng Sản Phẩm">Phòng Sản Phẩm</option>
+        <option value="Phòng KHTH">Phòng KHTH</option>
+        <option value="Phòng TVGP KHDN">Phòng TVGP KHDN</option>
+        <option value="Phòng KHDN">Phòng KHDN</option>
+        <option value="Phòng TVGP KHHCM">Phòng TVGP KHHCM</option>
+        <option value="Phòng KH HCM">Phòng KH HCM</option>
+        <option value="Phòng Hỗ Trợ">Phòng Hỗ Trợ</option>
+        <option value="Phòng KH YT-GD">Phòng KH YT-GD</option>
+        <option value="Phòng KH SXTD ">Phòng KH SXTD</option>
+      </select>
 
-  <p id="result"></p>
-  <button id="resetBtn" onclick="resetCheckin()">🔄 Check-in lại</button>
+      <input type="hidden" name="solanreset" id="solanreset" value="0" />
+
+      <button type="submit">✅ Gửi Check-in</button>
+    </form>
+
+    <iframe name="hiddenFrame" style="display:none;"></iframe>
+
+    <p id="result"></p>
+    <button id="resetBtn" onclick="resetCheckin()">🔄 Check-in lại</button>
+  </div>
 
   <script>
     const latTarget = 10.7774507;
@@ -82,7 +127,6 @@
     const resultEl = document.getElementById("result");
     const resetBtn = document.getElementById("resetBtn");
 
-    // ✅ Lấy số lần reset, mặc định 0 nếu chưa từng reset
     let resetCount = Number(localStorage.getItem("resetCount")) || 0;
 
     function getDistance(lat1, lon1, lat2, lon2) {
@@ -117,10 +161,7 @@
 
     function handleSubmit() {
       localStorage.setItem("hasCheckedIn", "true");
-
-      // ✅ Gửi đúng số lần reset hiện tại
       document.getElementById("solanreset").value = resetCount.toString();
-
       const name = document.getElementById("hoten").value;
       const time = new Date().toLocaleString("vi-VN");
       formEl.style.display = "none";
